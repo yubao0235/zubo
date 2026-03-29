@@ -1,25 +1,30 @@
-name: Build and Push Docker Image
+# 在 .github/workflows/docker-build.yml 中
+name: Build and Push to GHCR
 
 on:
   push:
-    branches: [ "main" ] # 每次推送到 main 分支自动构建
+    branches: [ "main" ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write # 🔥 这一步非常重要，给予写权限
+
     steps:
       - uses: actions/checkout@v3
       
-      # 登录到 Docker Hub (你需要先在 GitHub Secrets 设置用户名和 Token)
-      - name: Login to Docker Hub
+      - name: Login to GitHub Container Registry
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }} # 自动生成，不需要你申请
       
-      # 构建并推送镜像
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/iptv-tester:latest
+          # 格式: ghcr.io/你的GitHub用户名/仓库名:latest
+          tags: ghcr.io/${{ github.repository }}:latest
