@@ -27,4 +27,4 @@ jobs:
         with:
           push: true
           # 格式: ghcr.io/你的GitHub用户名/仓库名:latest
-          tags: ghcr.io/${{ github.repository }}:latest
+          tags: ghcr.io/yubao0235/zubo:latest
